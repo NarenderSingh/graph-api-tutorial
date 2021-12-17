@@ -8,6 +8,7 @@ import ErrorMessage from "./ErrorMessage";
 import NavBar from "./NavBar";
 import Welcome from "./Welcome";
 import "bootstrap/dist/css/bootstrap.css";
+import Calendar from "./Calendar";
 
 type AppProps = {
   pca: IPublicClientApplication;
@@ -26,6 +27,11 @@ export default function App({ pca }: AppProps) {
                 exact
                 path="/"
                 render={(props) => <Welcome {...props} />}
+              />
+              <Route
+                exact
+                path="/calendar"
+                render={(props) => <Calendar {...props} />}
               />
             </Container>
           </div>
