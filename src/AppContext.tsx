@@ -9,6 +9,8 @@ import React, {
 import { AuthCodeMSALBrowserAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/authCodeMsalBrowser";
 import { InteractionType, PublicClientApplication } from "@azure/msal-browser";
 import { useMsal } from "@azure/msal-react";
+import config from "./Config";
+import { getUser } from "./GraphService";
 
 export interface AppUser {
   displayName?: string;
@@ -59,8 +61,34 @@ export default function ProvideAppContext({
 }
 
 function useProvideAppContext() {
+  const msal = useMsal();
   const [user, setUser] = useState<AppUser | undefined>(undefined);
   const [error, setError] = useState<AppError | undefined>(undefined);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      if (!user) {
+        try {
+          // Check if user is already signed in
+          const account = msal.instance.getActiveAccount();
+          if (account) {
+            // Get the user from Microsoft Graph
+            const user = await getUser(authProvider);
+
+            setUser({
+              displayName: user.displayName || "",
+              email: user.mail || user.userPrincipalName || "",
+              timeFormat: user.mailboxSettings?.timeFormat || "",
+              timeZone: user.mailboxSettings?.timeZone || "UTC",
+            });
+          }
+        } catch (err: any) {
+          displayError(err.message);
+        }
+      }
+    };
+    checkUser();
+  });
 
   const displayError = (message: string, debug?: string) => {
     setError({ message, debug });
@@ -70,14 +98,46 @@ function useProvideAppContext() {
     setError(undefined);
   };
 
-  const authProvider = undefined;
+  // Used by the Graph SDK to authenticate API calls
+  const authProvider = new AuthCodeMSALBrowserAuthenticationProvider(
+    msal.instance as PublicClientApplication,
+    {
+      account: msal.instance.getActiveAccount()!,
+      scopes: config.scopes,
+      interactionType: InteractionType.Popup,
+    }
+  );
+
+  // const signIn = async () => {
+  //   const result = await msal.instance.loginPopup({
+  //     scopes: config.scopes,
+  //     prompt: "select_account",
+  //   });
+
+  //   // TEMPORARY: Show the access token
+  //   displayError("Access token retrieved", result.accessToken);
+  // };
 
   const signIn = async () => {
-    // TODO
+    await msal.instance.loginPopup({
+      scopes: config.scopes,
+      prompt: "select_account",
+    });
+
+    // Get the user from Microsoft Graph
+    const user = await getUser(authProvider);
+
+    setUser({
+      displayName: user.displayName || "",
+      email: user.mail || user.userPrincipalName || "",
+      timeFormat: user.mailboxSettings?.timeFormat || "",
+      timeZone: user.mailboxSettings?.timeZone || "UTC",
+    });
   };
 
   const signOut = async () => {
-    // TODO
+    await msal.instance.logoutPopup();
+    setUser(undefined);
   };
 
   return {

@@ -9,16 +9,28 @@ import NavBar from "./NavBar";
 import Welcome from "./Welcome";
 import "bootstrap/dist/css/bootstrap.css";
 
-export default function App() {
+type AppProps = {
+  pca: IPublicClientApplication;
+};
+
+export default function App({ pca }: AppProps) {
   return (
-    <ProvideAppContext>
-      <Router>
-        <NavBar />
-        <Container>
-          <ErrorMessage />
-          <Route exact path="/" render={(props) => <Welcome {...props} />} />
-        </Container>
-      </Router>
-    </ProvideAppContext>
+    <MsalProvider instance={pca}>
+      <ProvideAppContext>
+        <Router>
+          <div>
+            <NavBar />
+            <Container>
+              <ErrorMessage />
+              <Route
+                exact
+                path="/"
+                render={(props) => <Welcome {...props} />}
+              />
+            </Container>
+          </div>
+        </Router>
+      </ProvideAppContext>
+    </MsalProvider>
   );
 }
