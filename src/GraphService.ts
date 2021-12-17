@@ -92,3 +92,15 @@ export async function getUserWeekCalendar(
     return response.value;
   }
 }
+
+export async function createEvent(
+  authProvider: AuthCodeMSALBrowserAuthenticationProvider,
+  newEvent: Event
+): Promise<Event> {
+  ensureClient(authProvider);
+
+  // POST /me/events
+  // JSON representation of the new event is sent in the
+  // request body
+  return await graphClient!.api("/me/events").post(newEvent);
+}
