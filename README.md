@@ -1,3 +1,19 @@
+# Build React single-page apps with Microsoft Graph
+
+This tutorial teaches you how to build a React single-page app that uses the Microsoft Graph API to retrieve calendar information for a user.
+
+## Prerequisites:
+Before you start this tutorial, you should have Node.js and Yarn installed on your development machine. If you do not have Node.js or Yarn, visit the previous links for download options.
+
+You should also have either a personal Microsoft account with a mailbox on Outlook.com, or a Microsoft work or school account. If you don't have a Microsoft account, there are a couple of options to get a free account:
+
+You can sign up for a new personal Microsoft account.
+You can sign up for the Office 365 Developer Program to get a free Office 365 subscription.
+
+## Note:
+This tutorial was written with Node version 14.15.0 and Yarn version 1.22.10. The steps in this guide may work with other versions, but that has not been tested.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
